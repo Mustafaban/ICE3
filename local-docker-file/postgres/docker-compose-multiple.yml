@@ -1,3 +1,6 @@
+# ------------------------
+#  docker-compose -p postgres-inventory-single -f docker-compose-multiple.yml up -d
+# ------------------------
 
 version: '3.9'
 

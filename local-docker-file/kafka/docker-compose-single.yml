@@ -1,7 +1,3 @@
-# ------------------------
-#  docker-compose -p postgres-single -f docker-compose-single.yml up -d
-# ------------------------
-
 version: '3.9'
 
 services:
