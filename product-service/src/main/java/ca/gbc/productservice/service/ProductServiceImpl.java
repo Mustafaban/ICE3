@@ -6,6 +6,7 @@ import ca.gbc.productservice.model.Product;
 import ca.gbc.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -57,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
         log.debug("Updating a product {}", id);
 
         Query query = new Query();
-        query.addCriteria(Criteria.where("id").is(id));
+        query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
         Product product = mongoTemplate.findOne(query, Product.class);
 
         if (product != null) {
@@ -74,6 +75,7 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(String id) {
         log.debug("Deleting this product {}", id);
 
-        productRepository.deleteById(id);
+        productRepository.deleteById(new ObjectId(id).toString());
+
     }
 }

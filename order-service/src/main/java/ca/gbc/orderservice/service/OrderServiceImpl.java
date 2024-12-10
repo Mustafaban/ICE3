@@ -2,10 +2,12 @@ package ca.gbc.orderservice.service;
 
 import ca.gbc.orderservice.client.InventoryClient;
 import ca.gbc.orderservice.dto.OrderRequest;
+import ca.gbc.orderservice.event.OrderPlacedEvent;
 import ca.gbc.orderservice.model.Order;
 import ca.gbc.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
 
     private final InventoryClient inventoryClient;
+
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
 
     @Override
@@ -38,9 +42,16 @@ public class OrderServiceImpl implements OrderService {
                     .build();
 
             orderRepository.save(order);
+
+            // Send message to Kafka on order-placed topic
+            OrderPlacedEvent orderPlacedEvent =
+                    new OrderPlacedEvent(order.getOrderNumber(), orderRequest.userDetails().email());
+            log.info("Start - Sending OrderPlaceEvent {} to Kafka topic--placed", orderPlacedEvent);
+            kafkaTemplate.send("order-placed", orderPlacedEvent);
+            log.info("Complete - Sent OrderPlaceEvent {} to Kafka topic--placed", orderPlacedEvent);
+
         } else {
             throw new RuntimeException("Product with skuCode " + orderRequest.skuCode() + " is not in stock");
         }
-
     }
 }
