@@ -1,4 +1,4 @@
-package ca.gbc.apigatway.routes;
+package ca.gbc.apigateway.routes;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
